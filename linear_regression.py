@@ -56,7 +56,6 @@ class TestCase:
                 update_index = random.choice(list(misclassified_x.keys()))
                 epsilon = misclassified_x[update_index]
                 self.w = [w + self.learning_rate * epsilon * x for w, x in zip(self.w, self.X[update_index])]
-                #print(self.w)
             else:
                 break
         return iteration
