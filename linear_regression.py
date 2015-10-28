@@ -3,14 +3,14 @@ import random
 
 class TestCase:
     def __init__(self):
-        self.n = 100
+        self.n = 10
         self.d = 2
         self.p0 = [1] + [random.uniform(-1,1) for x in range(2)]
         self.p1 = [1] + [random.uniform(-1,1) for x in range(2)]
         self.w = [0 for x in range(self.d+1)]
         self.X = np.array([[1] + [random.uniform(-1,1) for x in range(self.d)] for x in range(self.n)])
         self.y = [self.target_function(x) for x in self.X]
-        self.learning_rate = 1
+        self.learning_rate = 0.1
 
     def target_function(self, x):
         v1 = (self.p1[1] - self.p0[1], self.p1[2] - self.p0[2])
@@ -41,14 +41,14 @@ class TestCase:
         
     def train_pla(self):
         iteration = 0
-        while iteration < 100:
+        while iteration < 500:
             iteration += 1
             error_count = 0
             misclassified_x = {}
             for i in range(len(self.X)):
                 hx = self.hypothesis_function(self.X[i])
                 y = self.y[i]
-                error = hx - y
+                error = y - hx
                 if error != 0:
                     error_count += 1
                     misclassified_x[i] = error
@@ -56,6 +56,7 @@ class TestCase:
                 update_index = random.choice(list(misclassified_x.keys()))
                 epsilon = misclassified_x[update_index]
                 self.w = [w + self.learning_rate * epsilon * x for w, x in zip(self.w, self.X[update_index])]
+                #print(self.w)
             else:
                 break
         return iteration
@@ -68,14 +69,13 @@ def learn_repeatedly(test_case_count):
         test_case = TestCase()
         test_case.train()
         p_training_error += test_case.estimate_p_training_error()
-        p_learning_error += test_case.estimate_p_learning_error(1)
+        p_learning_error += test_case.estimate_p_learning_error(100)
         
         iteration = test_case.train_pla()
-        print(iteration)
         total_iteration_pla += iteration
         
-    print(p_training_error / test_case_count)
-    print(p_learning_error / test_case_count)
-    print(total_iteration_pla / test_case_count)
+    print('P training error: ' + str(p_training_error / test_case_count))
+    print('P learning error: ' + str(p_learning_error / test_case_count))
+    print('Iteration: ' + str(total_iteration_pla / test_case_count))
         
-learn_repeatedly(1)
+learn_repeatedly(1000)
