@@ -26,7 +26,7 @@ class TestCase:
     def hypothesis_function(self, x):
         return np.sign(np.dot(x, self.weights))       
 
-    def train(self):
+    def train_pla(self):
         iteration = 0
         while iteration < 1000:
             iteration += 1
@@ -55,18 +55,18 @@ class TestCase:
             if hx != y: error_count += 1
         return (error_count / count)
 
-def learn_repeatedly(test_case_count, p_test_count):
+def learn_repeatedly(test_case_count):
     total_iteration = 0
-    total_error_count = 0
+    p_learning_error = 0
     for x in range(test_case_count):
         test_case = TestCase()
-        iteration = test_case.train()
+        iteration = test_case.train_pla()
         total_iteration += iteration
         
-        error_count = test_case.estimate_p_learning_error(p_test_count)*p_test_count
-        total_error_count += error_count
+        error = test_case.estimate_p_learning_error(1000)
+        p_learning_error += error
         
     print(total_iteration / test_case_count)
-    print(total_error_count / test_case_count / p_test_count)
+    print(p_learning_error / test_case_count)
     
-learn_repeatedly(1000, 1000)
+learn_repeatedly(1000)
