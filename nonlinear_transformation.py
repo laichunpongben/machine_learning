@@ -31,7 +31,7 @@ class TestCase:
         error = [a - b for a,b in zip(hx, self.y)]
         return sum(1 for d in error if d != 0) / self.n
         
-    def estimate_p_learning_error(self, count):
+    def estimate_p_test_error(self, count):
         error_count = 0
         for x in range(count):
             x1 = random.uniform(-1,1)
@@ -52,16 +52,16 @@ class TestCase:
         
 def learn_repeatedly(test_case_count):
     p_training_error = 0
-    p_learning_error = 0
+    p_test_error = 0
     for x in range(test_case_count):
         test_case = TestCase()
         test_case.transform_x()
         test_case.train()
         p_training_error += test_case.estimate_p_training_error()
-        p_learning_error += test_case.estimate_p_learning_error(1000)
+        p_test_error += test_case.estimate_p_test_error(1000)
 
     print('P training error: ' + str(p_training_error / test_case_count))
-    print('P learning error: ' + str(p_learning_error / test_case_count))
+    print('P test error: ' + str(p_test_error / test_case_count))
     print(test_case.w)
         
 learn_repeatedly(1000)
