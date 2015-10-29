@@ -2,13 +2,15 @@
 # Each pirate finds the strategy to maximize his own long run payoff by unsupervised learning
 # For the common game description: https://en.wikipedia.org/wiki/Pirate_game
 
+# Not finished
+
 from math import exp
 
 class Pirate:
     def __init__(self, rank):
         self.life = True
         self.priority = rank
-        self.payoffThreshold = [0 for x in range(5)] # need learning
+        self.payoff_threshold = [0 for x in range(5)] # need learning
         self.proposal = [0 for x in range(5)] # need learning
         
     def is_alive(self):
@@ -20,36 +22,36 @@ class Pirate:
     def propose_payoff(self):
         return self.proposal
         
-    def vote_proposal(self, payoff, proposalNo):
-        if (payoff >= self.payoffThreshold[proposalNo]): return 1
+    def vote_proposal(self, payoff, proposal_no):
+        if (payoff >= self.payoff_threshold[proposal_no]): return 1
         else: return 0
         
-    def adjust_payoff_threshold(self, shortRunAvgPayoff, longRunAvgPayoff, magnitude):
-        if (shortRunAvgPayoff <= longRunAvgPayoff): 
+    def adjust_payoff_threshold(self, short_run_avg_payoff, long_run_avg_payoff, magnitude):
+        if (short_run_avg_payoff <= long_run_avg_payoff): 
             adjustment = [0 for x in range(5)]
             for x in range(5):
-                if (self.payoffThreshold[x] > 33): adjustment[x] = magnitude * -1
+                if (self.payoff_threshold[x] > 33): adjustment[x] = magnitude * -1
                 else: adjustment[x] = magnitude
-            self.payoffThreshold = [sum(x) for x in zip(self.payoffThreshold, adjustment)]
+            self.payoff_threshold = [sum(x) for x in zip(self.payoff_threshold, adjustment)]
         else:
             adjustment = [0 for x in range(5)]
             for x in range(5):
-                if (self.payoffThreshold[x] > 33): adjustment[x] = magnitude * 3
+                if (self.payoff_threshold[x] > 33): adjustment[x] = magnitude * 3
                 else: adjustment[x] = magnitude * -3
-            self.payoffThreshold = [sum(x) for x in zip(self.payoffThreshold, adjustment)]
+            self.payoff_threshold = [sum(x) for x in zip(self.payoff_threshold, adjustment)]
             
-        thresholdLowerBounds = [0 for x in range(5)]
-        thresholdUpperBounds = [gold for x in range(5)]
-        self.payoffThreshold = [max(x) for x in zip(self.payoffThreshold, thresholdLowerBounds)]
-        self.payoffThreshold = [min(x) for x in zip(self.payoffThreshold, thresholdUpperBounds)]
+        threshold_lower_bounds = [0 for x in range(5)]
+        threshold_upper_bounds = [gold for x in range(5)]
+        self.payoff_threshold = [max(x) for x in zip(self.payoff_threshold, threshold_lower_bounds)]
+        self.payoff_threshold = [min(x) for x in zip(self.payoff_threshold, threshold_upper_bounds)]
         
-    def adjust_proposal(self, shortRunAvgPayoff, longRunAvgPayoff, magnitude):
+    def adjust_proposal(self, short_run_avg_payoff, long_run_avg_payoff, magnitude):
         initialize_proposals()
         
-totalGameCount = 0
+total_game_count = 0
 pirates = [0 for x in range(5)]
 gold = 100
-totalPayoffs = [0 for x in range(5)]
+total_payoffs = [0 for x in range(5)]
 
 def initialize():
     initialize_pirates()
@@ -63,17 +65,17 @@ def initialize_pirates():
 
 def initialize_payoff_thresholds():
     global pirates
-    pirates[0].payoffThreshold = [40, 0, 0, 0, 0]
-    pirates[1].payoffThreshold = [40, 50, 0, 0, 0]
-    pirates[2].payoffThreshold = [30, 40, 50, 0, 0]
-    pirates[3].payoffThreshold = [15, 30, 40, 100, 0]
-    pirates[4].payoffThreshold = [15, 15, 20, 1, 100]
+    pirates[0].payoff_threshold = [40, 0, 0, 0, 0]
+    pirates[1].payoff_threshold = [40, 50, 0, 0, 0]
+    pirates[2].payoff_threshold = [30, 40, 50, 0, 0]
+    pirates[3].payoff_threshold = [15, 30, 40, 100, 0]
+    pirates[4].payoff_threshold = [15, 15, 20, 1, 100]
 
 def initialize_proposals():
     global pirates
-    pirates[0].proposal = [pirates[0].payoffThreshold[0], 0, (gold - pirates[0].payoffThreshold[0]) / 2, 0, (gold - pirates[0].payoffThreshold[0]) / 2]
-    pirates[1].proposal = [0, pirates[1].payoffThreshold[1], 0, 0, (gold - pirates[1].payoffThreshold[1])]
-    pirates[2].proposal = [0, 0, pirates[2].payoffThreshold[2], 0, (gold - pirates[2].payoffThreshold[2])]
+    pirates[0].proposal = [pirates[0].payoff_threshold[0], 0, (gold - pirates[0].payoff_threshold[0]) / 2, 0, (gold - pirates[0].payoff_threshold[0]) / 2]
+    pirates[1].proposal = [0, pirates[1].payoff_threshold[1], 0, 0, (gold - pirates[1].payoff_threshold[1])]
+    pirates[2].proposal = [0, 0, pirates[2].payoff_threshold[2], 0, (gold - pirates[2].payoff_threshold[2])]
     pirates[3].proposal = [0 for x in range(3)] + [gold, 0]
     pirates[4].proposal = [0 for x in range(4)] + [gold]
     
@@ -89,18 +91,18 @@ def count_alive_pirates():
     return count
     
 def play_game():
-    global totalGameCount
+    global total_game_count
     global pirates
     
-    totalGameCount += 1
-    print("Game " + str(totalGameCount))
+    total_game_count += 1
+    print("Game " + str(total_game_count))
     
     reset_life()
     payoffs = [0 for x in range(len(pirates))]
 
     print("Thresholds")
     for x in range(len(pirates)):
-        print(["%0.2f" % a for a in pirates[x].payoffThreshold])
+        print(["%0.2f" % a for a in pirates[x].payoff_threshold])
 
     for x in range(len(pirates)):
         proposal = pirates[x].propose_payoff()
@@ -122,41 +124,41 @@ def play_game():
     return payoffs
         
 def play_game_set(count):
-    global totalPayoffs
-    gameSetPayoffs = [0 for x in range(len(pirates))]
+    global total_payoffs
+    game_set_payoffs = [0 for x in range(len(pirates))]
     for x in range(count):
         payoffs = play_game()
-        totalPayoffs = [sum(x) for x in zip(totalPayoffs, payoffs)]
-        gameSetPayoffs = [sum(x) for x in zip(gameSetPayoffs, payoffs)]
-    avgPayoffs = [x / count for x in gameSetPayoffs]
-    return avgPayoffs
+        total_payoffs = [sum(x) for x in zip(total_payoffs, payoffs)]
+        game_set_payoffs = [sum(x) for x in zip(game_set_payoffs, payoffs)]
+    avg_payoffs = [x / count for x in game_set_payoffs]
+    return avg_payoffs
 
-def adjust_strategies(shortRunAvgPayoffs, longRunAvgPayoffs):
+def adjust_strategies(short_run_avg_payoffs, long_run_avg_payoffs):
     global pirates
-    adjMagnitude = exp(-0.0001 * totalGameCount)
+    adj_magnitude = exp(-0.0001 * total_game_count)
     for x in range(len(pirates)):
-        pirates[x].adjust_payoff_threshold(shortRunAvgPayoffs[x], longRunAvgPayoffs[x], adjMagnitude)
-        pirates[x].adjust_proposal(shortRunAvgPayoffs[x], longRunAvgPayoffs[x], adjMagnitude)
+        pirates[x].adjust_payoff_threshold(short_run_avg_payoffs[x], long_run_avg_payoffs[x], adj_magnitude)
+        pirates[x].adjust_proposal(short_run_avg_payoffs[x], long_run_avg_payoffs[x], adj_magnitude)
         
 def learn():
     initialize()
     for x in range(5000):
-        avgPayoffs = play_game_set(1)
-        longRunAvgPayoffs = [x / totalGameCount for x in totalPayoffs]
-        adjust_strategies(avgPayoffs, longRunAvgPayoffs)
+        avg_payoffs = play_game_set(1)
+        long_run_avg_payoffs = [x / total_game_count for x in total_payoffs]
+        adjust_strategies(avg_payoffs, long_run_avg_payoffs)
 
 def report():
-    equilibriumPayoffs = [x / totalGameCount for x in totalPayoffs]
+    equilibrium_payoffs = [x / total_game_count for x in total_payoffs]
     print("Equilibrium Payoffs")
-    print(["%0.2f" % x for x in equilibriumPayoffs])
-    equilibriumPayoffThresholds = [x.payoffThreshold for x in pirates]
+    print(["%0.2f" % x for x in equilibrium_payoffs])
+    equilibrium_payoff_thresholds = [x.payoff_threshold for x in pirates]
     print("Equilibrium Payoff Thresholds")
     for x in range(len(pirates)):
-        print(["%0.2f" % y for y in equilibriumPayoffThresholds[x]])
+        print(["%0.2f" % y for y in equilibrium_payoff_thresholds[x]])
     print("Equilibrium Proposals")
-    equilibriumProposals = [x.proposal for x in pirates]
+    equilibrium_proposals = [x.proposal for x in pirates]
     for x in range(len(pirates)):
-        print(["%0.2f" % y for y in equilibriumProposals[x]])
+        print(["%0.2f" % y for y in equilibrium_proposals[x]])
 
 learn()
 report()
