@@ -9,7 +9,6 @@ class TestCase:
         self.p1 = [1] + [random.uniform(-1,1) for x in range(2)]
         self.weights = [0 for x in range(self.d+1)]
         self.training_set = [0 for x in range(self.n)]
-        self.threshold = 0
         self.learning_rate = 1
         
         for i in range(self.n):
@@ -46,7 +45,7 @@ class TestCase:
                 break
         return iteration
         
-    def estimate_p_learning_error(self, count):
+    def estimate_p_test_error(self, count):
         error_count = 0
         for x in range(count):
             x = tuple([1] + [random.uniform(-1,1) for x in range(self.d)])
@@ -57,16 +56,16 @@ class TestCase:
 
 def learn_repeatedly(test_case_count):
     total_iteration = 0
-    p_learning_error = 0
+    p_test_error = 0
     for x in range(test_case_count):
         test_case = TestCase()
         iteration = test_case.train_pla()
         total_iteration += iteration
         
-        error = test_case.estimate_p_learning_error(1000)
-        p_learning_error += error
+        error = test_case.estimate_p_test_error(1000)
+        p_test_error += error
         
     print(total_iteration / test_case_count)
-    print(p_learning_error / test_case_count)
+    print(p_test_error / test_case_count)
     
 learn_repeatedly(1000)
